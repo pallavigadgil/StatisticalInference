@@ -3,8 +3,8 @@ title: "Week4 Assignment1:Simulation Exercise"
 author: "Pallavi Gadgil"
 date: "7/1/2017"
 output:
-  html_document: default
-  pdf_document: default
+  html_document: 
+    keep_md: true
 ---
 
 ```{r setup, include=FALSE}
