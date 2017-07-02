@@ -1,0 +1,98 @@
+---
+title: 'Assignment 2: Inferential Data Analysis'
+author: "Pallavi Gadgil"
+date: "7/1/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+```
+
+## Inferential Data Analysis
+
+This report contains Inferential Data Analysis of the ToothGrowth Data in the R datasets package. The objective for this assignment is to 
+
+  >1. Load the ToothGrowth data and perform some basic exploratory data analyses
+  >2. Provide a basic summary of the data.
+  >3. Use confidence intervals and/or hypothesis tests to compare tooth growth by supp and dose. (Only use the techniques from class, even if there's other approaches worth considering)
+  >4. State your conclusions and the assumptions needed for your conclusions.
+
+
+## Load the ToothGrowth data and perform some basic exploratory data analyses
+The ToothGrowth data is loaded from the datasets package. Per R documentation, the data represent "The Effect of Vitamin C on Tooth Growth in Guinea Pigs".
+
+```{r ToothGrowth}
+data(ToothGrowth)
+head(ToothGrowth)
+```
+
+## Provide Basic Summary of the Data
+
+```{r summary}
+str(ToothGrowth)
+summary(ToothGrowth)
+```
+
+As seen in the suumary of this dataset, it has 60 observations on 3 variables.
+
+  >* [,1]	len	numeric	Tooth length
+  >* [,2]	supp	factor	Supplement type (VC or OJ).
+  >* [,3]	dose	numeric	Dose in milligrams/day
+
+To look at this data further, a box plot is prepared to look at the Tooth growth by Supplement Type and the dosage.
+```{r}
+qplot(supp, len, data = ToothGrowth, 
+      facets = ~dose, 
+      main = "Tooth growth by supplement type and dosage", 
+      xlab = "Supplement type", 
+      ylab = "Tooth Growth Length") + 
+  geom_boxplot(aes(fill = supp))
+```
+
+
+Based on the plot, it looks like the doage may have an impact on the Tooth growth but not quite clear if summplement type has any impact.
+
+
+##  Use confidence intervals and/or hypothesis tests to compare tooth growth by supp and dose.
+
+Lets start with the null hypothesis that supplement type does not have any impact on the tooth growth rate.
+```{r suppHypothesis}
+t.test(len~supp, paired=FALSE,data=ToothGrowth,var.equal=TRUE)
+```
+As we can see, the P value is > 0.05 and the 95% confidence interval includes 0. Hence there is not enough evidence to reject the null Hypothesis.
+
+### Lets start comparing growth rate for dosage. 
+
+Since the dosage has 3 unique values (0.5,1.0 and 2.0), we will split the data set in 2 dosage types to run the t tests. Each comparision set will have null hpothesis that the increase in the dosage does not increase the tooth growth length. 
+
+
+#### Comparing dosage 0.5 and 1.0
+
+```{r dose510}
+toothGrowth0510<- subset(ToothGrowth, dose %in% c(0.5,1.0))
+t.test(len~dose, paired=FALSE,data=toothGrowth0510,var.equal=TRUE)
+```
+
+#### Comparing dosage 0.5 and 2.0
+```{r dose520}
+toothGrowth0520<- subset(ToothGrowth, dose %in% c(0.5,2.0))
+t.test(len~dose, paired=FALSE,data=toothGrowth0520,var.equal=TRUE)
+
+```
+
+#### Comparing dosage 1.0 and 2.0
+```{r dose1020}
+toothGrowth1020<- subset(ToothGrowth, dose %in% c(1.0,2.0))
+t.test(len~dose, paired=FALSE,data=toothGrowth1020,var.equal=TRUE)
+```
+
+As we can see, all 3 tests have close to 0 p value and the confidence interval at 95% does not cross over 0. Hence we must reject the null hypothesis and accept the alternative,i.e.  Tooth Growth increases with an increasing dose.
+
+## Conclusion
+Based on the above t tests we can conclude that
+>1.  Supplement type has no effect on tooth growth/length
+>2. Tooth Growth increases with an increasing dose.
+
+
